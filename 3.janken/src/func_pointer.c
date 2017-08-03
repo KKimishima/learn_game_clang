@@ -21,13 +21,14 @@ void three(){
 }
 
 int main(){
-  void (*po[])() = {one,two,three};
+  void (*po[])(int) = {one,two,three};
   int sw;
+  int print_sw;
 
   printf("実行番号入力:");
   scanf("%d",&sw);
 
-  (*po[sw])();
+  (*po[sw])(print_sw);
 
   return 0;
 
