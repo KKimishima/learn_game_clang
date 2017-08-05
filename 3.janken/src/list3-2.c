@@ -7,25 +7,62 @@
 #include<stdlib.h>
 #include<time.h>
 
-// 列挙体
-// じゃんけんの手
-enum junke_patten{
-  junken_goo,
-  junken_choki,
-  junken_paa,
-};
-// じゃんけん結果
-enum junken_result{
-  win,
-  loss,
-  draw,
-};
+// じゃんけん結果を表示待たせる関数
+int sleep(unsigned long wait_time){
+  clock_t start_time;
+  clock_t end_time;
 
+  start_time = clock();
+
+ do{
+  if ((end_time = clock()) == (clock_t) -1){return -1;} //エラー時の処理
+ }while((1000UL * (end_time - start_time))/ CLOCKS_PER_SEC <= wait_time);
+ 
+ return 0;
+}
+
+
+// じゃんけんの手を表示する関数
+void goo(){
+  puts("じゃんけん!!!:ぐー");
+}
+
+void chek(){
+  puts("じゃんけん!!!:チョキ");
+}
+
+void paa(){
+  puts("じゃんけん!!!:パー");
+}
+
+// じゃんけんの勝敗を表示する関すう
+void draw(){
+  puts("引き分けです!!!");
+}
+
+void loss(){
+  puts("負けです!!!");
+}
+
+void win(){
+  puts("勝ちです!!!");
+}
 
 int main(){
-  int junken_input;   // じゃんけん入力
-  int junken_ans;     // 生成されたじゃんけんの手
-  int retry;          // リトライフラグ
+  // じゃんけん判別関数
+  void  (*jenken_func_p[6])() = {
+    goo,
+    chek,
+    paa,
+    draw,
+    loss,
+    win
+  };
+
+  int     junken_input;           // じゃんけん入力
+  int     junken_ans;             // 生成されたじゃんけんの手
+  int     retry;                  // リトライフラグ
+  int     result;                 // じゃんけんの勝敗
 
   srand(time(NULL));  // 乱数種生成
 
@@ -39,13 +76,32 @@ int main(){
     puts("\nじゃんけん入力開始");
     puts("じゃんけんぽん");
     do{     
-      puts("グー..(0),チョキ..(1),パー..(2)");
+      printf("グー..(0),チョキ..(1),パー..(2):");
       scanf("%d",&junken_input);
     }while(junken_input < 0 || junken_input > 2);
 
-    puts("私の入力は");
+    // 表示まち関数
+    sleep(1000);
+    puts("私の入力は:");
+    // 関数ポインタ呼び出し
+    jenken_func_p[junken_input]();
 
-  }while();
+    sleep(1000);
+    puts("相手の入力は");
+    // 関数ポインタ呼び出し
+    jenken_func_p[junken_ans]();
+  
+    // じゃんけん判別処理
+    result = (junken_input - junken_ans + 3) % 3;
+
+    puts("勝敗は");    
+    sleep(3000);
+    // 関数ポインタに配列用を渡すため "+2"している
+    jenken_func_p[result +3]();
+
+    printf("もう一度行いますか\nはい(1)...いいえ(0)");
+    scanf("%d",&retry);
+  }while(retry == 1);
 
   return 0;
 }
