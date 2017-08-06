@@ -16,6 +16,7 @@ int main(){
   int retry;                    // 再挑戦するかのフラグ
 
   // 表示文字列の変数
+  // 静的な変数のところに置かれて
   const char *junken_input_patten[] = {    // じゃんけんの入力表示文字列
     "グー",
     "チョキ",
