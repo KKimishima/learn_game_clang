@@ -14,19 +14,26 @@
 typedef struct{       // じゃんけん入力構造体
   int input;
   int random;
-}junken_value;
-
-typedef struct{       // じゃんけん結果
   int win;
   int lose;
   int draw;
-}junken_result;
-
-void (*func[])
+}junken_value;
 
 // メイン関数
 int main(){
   
+  // 構造体宣言と初期化
+  junken_value  value   = {0,0,0,0,0};    // 入力の値の初期化
+
+  srand(time(NULL));                // ランダム種生成
+
+
+
+  puts("じゃんけんゲームスタート");
+
+  do{
+  
+  }while();
 
   return 0;
 }
