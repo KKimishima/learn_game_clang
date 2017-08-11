@@ -12,11 +12,10 @@
 
 // 列挙体
 enum{
-  F_INPUT = 0,
-  F_RANDOM,
-  F_WIN,
-  F_LOSE,
-  F_DRAW
+  F_INIT  = 0,
+  F_INPUT,
+  F_GAME,
+  F_RETRY
 };
 
 // 構造体
@@ -26,59 +25,120 @@ typedef struct{       // じゃんけん入力構造体
   int win;            // 勝ちフラグ
   int lose;           // 負けフラグ
   int draw;           // 引き分けフラグ
+  int result;         // 結果の収納
+  int retry;          // リトライフラグ
 }junken_value;
+
+// ポインタを使った二次元配列
+char *juken_hand[] = {
+  "グー",
+  "チョキ",
+  "パー"
+};
+
+void retry_func(junken_value *value){
+  printf("もう一度挑戦しますか:");
+  scanf("%d",&value->retry);
+  return;
+}
+
+void doraw_func(junken_value *value){
+  value->draw++;
+  puts("引き分けです");
+  return;
+};
+
+void lose_func(junken_value *value){
+  value->lose++;
+  puts("負けです");
+  return;
+};
+
+void win_func(junken_value *value){
+  value->win++;
+  puts("勝ちです");
+  return;
+};
+
+// じゃんけんゲームの勝敗処理
+void game_func(junken_value *value){
+  value->result = (value->input - value->random + 3) % 3;
+  value->result += 4; // 関数ポインタ呼び出しのため+3する
+  return;
+};
 
 // インプット関数
 // 構造体にポインタで紐付けて引数にする
 void input_func(junken_value *value){
   int i;
-
   value->random = rand() % 3; // 1から2まで生成
-//void input_func(int x){                       //構造体抜き
-//  printf("関数呼び出しテスト%d\n",value->input);
-  do{
-    printf("じゃんけんぽん...\n");
-    for(i = PATTEN_MIN;i < PATTEN_MAX;i++){
-      printf("(%d)%s");
-    }
-  }while();
-//  printf("関数呼び出しテスト%d",x);           //構造体抜き
-  value->input = 10;
+
+    do{
+      // 二次元配列から文字のよびだし
+      printf("じゃんけんぽん...\n");
+      for(i = PATTEN_MIN;i < PATTEN_MAX;i++){
+        printf("(%d)%s",i,juken_hand[i]);
+      }
+
+      printf(":");
+      scanf("%d",&value->input);
+    
+  }while(value->input < 0 || value->input > 2);
+  
+  printf("私の手は:%sで、自動生成の手は:%sです\n",juken_hand[value->input],juken_hand[value->random]);
+
   return;
 };
 
-// コールバック関数
+
+void init_func(junken_value *value){
+  value->input  = 0;
+  value->random = 0;
+  value->win    = 0;
+  value->lose   = 0;
+  value->draw   = 0;
+  value->result = 0;
+  value->retry  = 0;
+}
+  // コールバック関数
 // コールバック関数に構造体ポインタに紐付け
  typedef void (*callback)(junken_value *value);
-//typedef void (*callback)(int);                // 構造体抜き
 
 //コールバック 関数テーブル
 callback (func_table[]) = {
-  input_func
- //  random_func,
- //  win_func,
- //  lose_func,
- //  doraw_func
+  init_func,
+  input_func,
+  game_func,
+  retry_func,
+  win_func,
+  lose_func,
+  doraw_func
 };
 
 // メイン関数
 int main(){
   
-  // 初期化処理
-  junken_value value = {0,0,0,0,0};   // 構造体宣言と初期化
-  int retry = 0;                      // リトライフラグ作成
   srand(time(NULL));                  // ランダム種生成
 
   puts("じゃんけんゲームスタート");
-
+  
+  junken_value value;
   // 名処理開始
   do{
+    // 初期化処理
+//    junken_value value = {0,0,0,0,0,0,0};   // 構造体宣言と初期化
+
+    (*func_table[F_INIT])(&value);
 
     (*func_table[F_INPUT])(&value);
-//    (*func_table[0])(1);                      // 構造体抜き
-       printf("構造体返り値確認:%d\n",value.input);
+    
+    (*func_table[F_GAME])(&value);
+
+    (*func_table[value.result])(&value);
+
+    (*func_table[F_RETRY])(&value);
 //  }while(retry == 0);               //こっちが正しいコード
-  }while(retry == 1);
+  }while(value.retry == 0);
 
   return 0;
 }
