@@ -12,13 +12,15 @@
 
 // 列挙体
 enum{
-  F_INIT  = 0,
-  F_INPUT,
-  F_GAME,
-  F_RETRY
+  F_INIT  = 0,          // init_funcに紐づく列挙体
+  F_INPUT,              // init_funcに紐づく列挙体
+  F_GAME,               // game_funcに紐づく列挙体
+  F_RETRY,              // retry_funcに紐づく列挙体
+  F_SCORE               // score_funcに紐づく列挙体
 };
 
 // 構造体
+// ここに処理内で使う変数をすべて定義
 typedef struct{       // じゃんけん入力構造体
   int input;          // ユーザ入力
   int random;         // ランダム入力
@@ -30,40 +32,53 @@ typedef struct{       // じゃんけん入力構造体
 }junken_value;
 
 // ポインタを使った二次元配列
+// メッセージに使う文字列を収納
 char *juken_hand[] = {
   "グー",
   "チョキ",
   "パー"
 };
 
+// 呼び出さる関数を一覧
+// スコア表示関数
+void score_func(junken_value *value){
+  puts("ゲームスコア!!!");
+  printf("勝利回数(%d)...負け回数(%d)..引き分け回数(%d)\n",value->win,value->lose,value->draw);
+  return;
+}
+
+// リトライ処理関数
 void retry_func(junken_value *value){
-  printf("もう一度挑戦しますか:");
+  printf("もう一度挑戦しますか\n挑戦..(1)/終了...(0):");
   scanf("%d",&value->retry);
   return;
 }
 
+// 勝利関数
 void doraw_func(junken_value *value){
-  value->draw++;
-  puts("引き分けです");
+  value->draw += 1;                     // 引き分けフラブをプラスする
+  puts("***引き分けです***");
   return;
 };
 
 void lose_func(junken_value *value){
-  value->lose++;
-  puts("負けです");
+  value->lose += 1;                     // 負けフラグをプラスする
+  puts("***負けです***");
   return;
 };
 
 void win_func(junken_value *value){
-  value->win++;
-  puts("勝ちです");
+  value->win += 1;                      // 勝ちフラグをプラスする
+  puts("***勝ちです***");
   return;
 };
 
 // じゃんけんゲームの勝敗処理
 void game_func(junken_value *value){
-  value->result = (value->input - value->random + 3) % 3;
-  value->result += 4; // 関数ポインタ呼び出しのため+3する
+  value->result = (value->input - value->random + 3) % 3; //
+  printf("じゃんけん計算結果:%d\n",value->result);
+  value->result += 5; // 関数ポインタ呼び出しのため+3する
+  printf("計算結果関数呼び出し:%d\n",value->result);
   return;
 };
 
@@ -90,16 +105,15 @@ void input_func(junken_value *value){
   return;
 };
 
-
+// 初期化関数
+// すべての構造体変数をの初期化
 void init_func(junken_value *value){
   value->input  = 0;
   value->random = 0;
-  value->win    = 0;
-  value->lose   = 0;
-  value->draw   = 0;
-  value->result = 0;
   value->retry  = 0;
-}
+  value->result = 0;
+  return;
+};
   // コールバック関数
 // コールバック関数に構造体ポインタに紐付け
  typedef void (*callback)(junken_value *value);
@@ -110,9 +124,10 @@ callback (func_table[]) = {
   input_func,
   game_func,
   retry_func,
-  win_func,
+  score_func,
+  doraw_func,
   lose_func,
-  doraw_func
+  win_func
 };
 
 // メイン関数
@@ -122,14 +137,20 @@ int main(){
 
   puts("じゃんけんゲームスタート");
   
-  junken_value value;
+  junken_value value;                 // 変数構造体宣言
+ 
+  // 結果の初期化
+  value.lose   = 0;
+  value.draw   = 0;
+  value.win    = 0;
+ 
   // 名処理開始
   do{
-    // 初期化処理
-//    junken_value value = {0,0,0,0,0,0,0};   // 構造体宣言と初期化
 
+    // 初期化関数呼び出し
     (*func_table[F_INIT])(&value);
 
+    // 入力関数呼び出し
     (*func_table[F_INPUT])(&value);
     
     (*func_table[F_GAME])(&value);
@@ -138,7 +159,9 @@ int main(){
 
     (*func_table[F_RETRY])(&value);
 //  }while(retry == 0);               //こっちが正しいコード
-  }while(value.retry == 0);
+  }while(value.retry == 1);
+    
+    (*func_table[F_SCORE])(&value);
 
   return 0;
 }
