@@ -14,11 +14,100 @@
 //   そのかで、正解までの時間を測定して速さを競う
 //
 // 20170812 基礎部分の作成
+//
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
+#include<ctype.h>
 #include<time.h>
 
+#define NUBER_MAX 9
+#define DIGITS 4  // 出題数列の最大(数字列としては4だが、配列のため-1)
+
+//数値を入力
+void input_func(){
+  int   input_num[DIGITS] = {0,0,0,0};
+  char  input_str[DIGITS + 1]; // 文字列のため+1
+  int   i,j;
+
+  while(1){
+    puts("四桁の数値を入力してください");
+    puts("四桁以上の文字は無効になります!!!");
+    fgets(input_str,sizeof(input_str),stdin); 
+ 
+    if(strlen(input_str) != DIGITS){
+      puts("入力文字数が足りません");
+//      input_num = ;
+      continue;
+    }
+
+    for(i = 0;i < DIGITS;i++){
+      if(!isdigit(input_str[i])){
+        puts("入力エラー");
+        exit(1);
+      }else{
+        input_num[i] = input_str[i] - '0';
+        printf("%d",input_num[i]);
+        for(j = 0;j< i ;j++){
+          if(input_str[i] == input_str[j]){
+            puts("同じ文字があるよ");
+          }
+        }
+      }
+     }
+    puts("");
+  
+    break;
+   }
+  return ;
+}
+
+// ランダム生成の初期化
+void random_init(){
+  int i,j;
+  int random_test[DIGITS];
+  int random_temp;
+  puts("ランダム数値の生成");
+  
+  // 重複のないランダムな数値の入力
+  for(i = 0;i <= sizeof(random_test) / sizeof(random_test[0]);i++){ // 一重目のループ:配列の数だけ繰り返す
+    do{                                                             // 二重目のループ:基本配列数と検証入れうすう
+      random_temp = 0 + rand() % NUBER_MAX + 1;                     // 0~9までの乱数を比較用一時変数に収める+1する
+      for(j = 0;j < i;j++){                                         // 三重ループ:0(j)かカレント配列数(i)まで
+        if(random_test[j] == random_temp){                          // すでにデータが得られているか調べる
+          break;                                                    // ブレイクするとwhileの条件で必ず弾かれるので
+        }                                                           // 正常な数値が入れまで繰り返される
+      }
+    }while(i < j );
+    random_test[i] = random_temp;
+    printf("%d",random_test[i]);
+  }
+  printf("\n");
+  return ;
+}
+
+// 初期化関数
+void value_init(){
+  srand(time(NULL));
+  return;
+}
+
 int main(){
+  int random_num;
+  int ans_num;
+  int retry;
+  
+  retry = 0;
+  do{
+    value_init();
+
+    random_init();
+ 
+    input_func();
+
+  }while(retry == 1);
+//  }while(retry == 0); // こっちが正しい
+  
 
   return 0;
 }
