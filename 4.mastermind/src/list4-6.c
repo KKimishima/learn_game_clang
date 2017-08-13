@@ -24,56 +24,60 @@
 #define NUBER_MAX 9
 #define DIGITS 4  // 出題数列の最大(数字列としては4だが、配列のため-1)
 
-// インプットチェック関数
-//void inputcheck_func(){
-//  int input_frag;
-//  do{
-//    input_frag =  input_func();
-//    switch input_str
-// }while()
-//}
+// 
 
 //数値を入力
-void input_func(){
+int input_func(){
   int   input_num[DIGITS] = {0,0,0,0};
   char  input_str[DIGITS + 2]; // 文字列のため+1と必ず改行コードを入れるため+1
   int   i,j;
 
-  while(1){
-    puts("四桁の数値を入力してください");
-    puts("四桁以上の文字は無効になります!!!");
-    printf("数値:");
-    fgets(input_str,sizeof(input_str),stdin); 
+  puts("四桁の数値を入力してください");
+  puts("四桁以上の文字は無効になります!!!");
+  printf("数値:");
+  fgets(input_str,sizeof(input_str),stdin); 
  
-     if(strlen(input_str) != 5){  //
-       puts("入力文字数があっていません");
-      // 初期化してループに戻す
-      memset(input_str,'\0',DIGITS + 1 );
-      memset(input_num,0,DIGITS);
-      continue;
-    }
+  if(strlen(input_str) != 5){  //
+    // 初期化して結果を返す
+    //memset(input_str,'\0',DIGITS + 1 );
+    //memset(input_num,0,DIGITS);
+    return 1;
+  }
 
-    for(i = 0;i < DIGITS;i++){
-     if(!isdigit(input_str[i])){
-        puts("文字入力エラー");
-        exit(1);
-      }
-    }
+  for(i = 0;i < DIGITS;i++){
+    if(!isdigit(input_str[i])){
+      //puts("文字入力エラー");
+      return 2;
+     }
+  }
 
-    for(i = 0;i < DIGITS;i++){
-      input_num[i] = input_str[i] - '0';
-      for(j = 0;j< i ;j++){
-        if(input_str[i] == input_str[j]){
-          puts("同じ文字があるよ");
-          exit(2);
+  for(i = 0;i < DIGITS;i++){
+    input_num[i] = input_str[i] - '0';
+    for(j = 0;j< i ;j++){
+      if(input_str[i] == input_str[j]){
+        puts("同じ文字があるよ");
+          return 3;
         }
       }
      }
-    puts("");
-  
-    break;
-   }
-  return ;
+
+  return 0;
+}
+
+// インプットチェック関数
+void inputcheck_func(){
+  int input_frag;
+  do{
+    input_frag =  input_func();
+    switch(input_frag){
+      case  0:  puts("***OK***");                       break;
+      case  1:  puts("***文字数があっていません***");   break;
+      case  2:  puts("***文字に間違いがあります***");   break;
+      case  3:  puts("***同じ文字が含まれています***"); break;
+      default:  puts("***入力エラー***"); exit(1);      break;
+    }
+  }while(input_frag != 0);
+  return;
 }
 
 // ランダム生成の初期化
@@ -117,7 +121,7 @@ int main(){
 
     random_init();
  
-    input_func();
+    inputcheck_func();
 
   }while(retry == 1);
 //  }while(retry == 0); // こっちが正しい
