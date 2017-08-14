@@ -24,6 +24,10 @@
 #define NUBER_MAX 9
 #define DIGITS 4  // 出題数列の最大
 
+//typedef struct{
+//  int random_num[DIGITS];
+//  typedef 
+//}
 // ゲームの判定関数
 
 
@@ -131,6 +135,7 @@ int main(){
  
     inputcheck_func();
 
+//    hitblow_func();
   }while(retry == 1);
 //  }while(retry == 0); // こっちが正しい
   
