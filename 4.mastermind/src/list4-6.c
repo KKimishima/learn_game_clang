@@ -22,44 +22,49 @@
 #include<time.h>
 
 #define NUBER_MAX 9
-#define DIGITS 4  // 出題数列の最大(数字列としては4だが、配列のため-1)
+#define DIGITS 4  // 出題数列の最大
 
-// 
+// ゲームの判定関数
+
 
 //数値を入力
 int input_func(){
   int   input_num[DIGITS] = {0,0,0,0};
-  char  input_str[DIGITS + 2]; // 文字列のため+1と必ず改行コードを入れるため+1
+  char  input_str[DIGITS + 2];                  // 文字列のため+1と必ず改行コードを入れるため+1
   int   i,j;
 
   puts("四桁の数値を入力してください");
   puts("四桁以上の文字は無効になります!!!");
   printf("数値:");
-  fgets(input_str,sizeof(input_str),stdin); 
+  fgets(input_str,sizeof(input_str) + 1,stdin); // 文字オーバを収納するため+1
  
-  if(strlen(input_str) != 5){  //
-    // 初期化して結果を返す
-    //memset(input_str,'\0',DIGITS + 1 );
-    //memset(input_num,0,DIGITS);
+  // 文字数が少ない場合
+  if(strlen(input_str) <= 4){  //
     return 1;
+   }
+
+  // 文字数が多い場合
+  if(strlen(input_str) > 5){  //
+    while ( getchar()  !=  '\n'  );             // 入力バッファから,\nまで読み飛ばし
+    return 2;
+  }
+  
+  // 文字が含まれいないか確認
+  for(i = 0;i < DIGITS;i++){
+    if(!isdigit(input_str[i])){                 // 文字が含まれるとfalse(0)がかえされる
+      return 3;
+    }
   }
 
+  // 同じ文字があるか確認
   for(i = 0;i < DIGITS;i++){
-    if(!isdigit(input_str[i])){
-      //puts("文字入力エラー");
-      return 2;
-     }
-  }
-
-  for(i = 0;i < DIGITS;i++){
-    input_num[i] = input_str[i] - '0';
+    input_num[i] = input_str[i] - '0';          // `0`を引いて数字キャストする
     for(j = 0;j< i ;j++){
       if(input_str[i] == input_str[j]){
-        puts("同じ文字があるよ");
-          return 3;
-        }
+        return 4;
       }
-     }
+    }
+  }
 
   return 0;
 }
@@ -71,9 +76,10 @@ void inputcheck_func(){
     input_frag =  input_func();
     switch(input_frag){
       case  0:  puts("***OK***");                       break;
-      case  1:  puts("***文字数があっていません***");   break;
-      case  2:  puts("***文字に間違いがあります***");   break;
-      case  3:  puts("***同じ文字が含まれています***"); break;
+      case  1:  puts("***文字数が少なすぎ***");         break;
+      case  2:  puts("***文字数が多すぎです***");       break;
+      case  3:  puts("***文字に間違いがあります***");   break;
+      case  4:  puts("***同じ文字が含まれています***"); break;
       default:  puts("***入力エラー***"); exit(1);      break;
     }
   }while(input_frag != 0);
@@ -106,7 +112,6 @@ void random_init(){
 
 // 初期化関数
 void value_init(){
-  srand(time(NULL));
   return;
 }
 
@@ -114,7 +119,10 @@ int main(){
   int random_num;
   int ans_num;
   int retry;
-  
+  time_t start,end;
+
+  srand(time(NULL));
+
   retry = 0;
   do{
     value_init();
