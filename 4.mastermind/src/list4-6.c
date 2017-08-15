@@ -19,14 +19,11 @@
 #include<ctype.h>
 #include<time.h>
 
-#define NUBER_MAX 9
-#define DIGITS 4  // 出題数列の最大
-
-// ゲームの判定関数
-
+#define NUBER_MAX 10  // 生成されるランダム数の限界(9だが+1)
+#define DIGITS 4      // 出題数列の最大
 
 //数値を入力
-int input_func(int *input_num,char *input_str){
+int input_check(int *input_num,char *input_str){
   int   i,j;
 
   memset(input_num,0,DIGITS);
@@ -43,7 +40,7 @@ int input_func(int *input_num,char *input_str){
    }
 
   // 文字数が多い場合
-  if(strlen(input_str) > 5){  //
+  if(strlen(input_str) == 6){  //
     while ( getchar()  !=  '\n'  );             // 入力バッファから,\nまで読み飛ばし
     return 2;
   }
@@ -57,7 +54,8 @@ int input_func(int *input_num,char *input_str){
 
   // 同じ文字があるか確認
   for(i = 0;i < DIGITS;i++){
-    input_num[i] = input_str[i] - '0';          // `0`を引いて数字キャストする
+    input_num[i] = input_str[i]  - '0';
+ //   input_num[i] = input_str[i] - '0';          // `0`を引いて数字キャストする
     for(j = 0;j< i ;j++){
       if(input_str[i] == input_str[j]){
         return 4;
@@ -69,11 +67,11 @@ int input_func(int *input_num,char *input_str){
 }
 
 // インプットチェック関数
-void inputcheck_func(int *input_num,char *input_str){
+void input_value(int *input_num,char *input_str){
   int input_frag;                                // 判別フラグ変数
 
   do{
-    input_frag =  input_func(input_num,input_str);
+    input_frag =  input_check(input_num,input_str);
     switch(input_frag){
       case  0:  puts("***OK***");                       break;
       case  1:  puts("***文字数が少なすぎ***");         break;
@@ -106,16 +104,14 @@ void random_init(int *random_num){
     }while(i > j );
     random_num[i] = random_comp;                // 確定した値を比較変数からぶっこむ
   }
-  return ;
 }
 
 int main(){
   int   random_num[DIGITS];
   int   input_num[DIGITS];
   char  input_str[DIGITS + 2];                  // 文字列のため+1と必ず改行コードを入れるため+1
-  int ans_num;
   int retry;
-  time_t start,end;
+  int ans_num;
   int i;
 
   srand(time(NULL));
@@ -131,7 +127,7 @@ int main(){
     }
     puts("");
 
-    inputcheck_func(input_num,input_str);
+    input_value(input_num,input_str);
 
     // デバッグ用
     for(i = 0;i < DIGITS;i++){
@@ -139,6 +135,7 @@ int main(){
     }
     puts("");
 
+//    hitblow_func();
   }while(retry == 1);
 //  }while(retry == 0); // こっちが正しい
   
