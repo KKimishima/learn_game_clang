@@ -13,8 +13,6 @@
 // 4,これら繰り返していき正解を行うまで繰り返す。
 //   そのかで、正解までの時間を測定して速さを競う
 //
-// 20170812 基礎部分の作成
-//
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -28,10 +26,11 @@
 
 
 //数値を入力
-int input_func(){
-  int   input_num[DIGITS] = {0,0,0,0};
-  char  input_str[DIGITS + 2];                  // 文字列のため+1と必ず改行コードを入れるため+1
+int input_func(int *input_num,char *input_str){
   int   i,j;
+
+  memset(input_num,0,DIGITS);
+  memset(input_str,'0',strlen(input_str));
 
   puts("四桁の数値を入力してください");
   puts("四桁以上の文字は無効になります!!!");
@@ -70,10 +69,11 @@ int input_func(){
 }
 
 // インプットチェック関数
-void inputcheck_func(){
-  int input_frag;
+void inputcheck_func(int *input_num,char *input_str){
+  int input_frag;                                // 判別フラグ変数
+
   do{
-    input_frag =  input_func();
+    input_frag =  input_func(input_num,input_str);
     switch(input_frag){
       case  0:  puts("***OK***");                       break;
       case  1:  puts("***文字数が少なすぎ***");         break;
@@ -87,49 +87,57 @@ void inputcheck_func(){
 }
 
 // ランダム生成の初期化
-void random_init(){
+void random_init(int *random_num){
   int i,j;
-  int random_test[DIGITS];
-  int random_temp;
+  int random_comp;                              // 比較変数を一時保存
+
+  memset(random_num,0,DIGITS);                  // 0で初期化
+
   puts("ランダム数値の生成");
-  
   // 重複のないランダムな数値の入力
-  for(i = 0;i <= sizeof(random_test) / sizeof(random_test[0]);i++){ // 一重目のループ:配列の数だけ繰り返す
-    do{                                                             // 二重目のループ:基本配列数と検証入れうすう
-      random_temp = 0 + rand() % NUBER_MAX + 1;                     // 0~9までの乱数を比較用一時変数に収める+1する
-      for(j = 0;j < i;j++){                                         // 三重ループ:0(j)かカレント配列数(i)まで
-        if(random_test[j] == random_temp){                          // すでにデータが得られているか調べる
-          break;                                                    // ブレイクするとwhileの条件で必ず弾かれるので
-        }                                                           // 正常な数値が入れまで繰り返される
+  for(i = 0;i <= DIGITS ;i++){                  // 一重目のループ:配列の数だけ繰り返す
+    do{                                         // 二重目のループ:基本配列数と検証入れうすう
+      random_comp = 0 + rand() % NUBER_MAX + 1; // 0~9までの乱数を比較用一時変数に収める+1する
+      for(j = 0;j < i;j++){                     // 三重ループ:0(j)かカレント配列数(i)まで
+        if(random_num[j] == random_comp){       // すでにデータが得られているか調べる
+          break;                                // ブレイクするとwhileの条件で必ず弾かれるので
+        }                                       // 正常な数値が入れまで繰り返される
       }
-    }while(i < j );
-    random_test[i] = random_temp;
-    printf("%d",random_test[i]);
+    }while(i > j );
+    random_num[i] = random_comp;                // 確定した値を比較変数からぶっこむ
   }
-  printf("\n");
   return ;
 }
 
-// 初期化関数
-void value_init(){
-  return;
-}
-
 int main(){
-  int random_num;
+  int   random_num[DIGITS];
+  int   input_num[DIGITS];
+  char  input_str[DIGITS + 2];                  // 文字列のため+1と必ず改行コードを入れるため+1
   int ans_num;
   int retry;
   time_t start,end;
+  int i;
 
   srand(time(NULL));
 
   retry = 0;
   do{
-    value_init();
 
-    random_init();
+    random_init(random_num);
  
-    inputcheck_func();
+    // デバッグ用
+    for(i = 0;i < DIGITS;i++){
+      printf("%d",random_num[i]);
+    }
+    puts("");
+
+    inputcheck_func(input_num,input_str);
+
+    // デバッグ用
+    for(i = 0;i < DIGITS;i++){
+      printf("%d",input_num[i]);
+    }
+    puts("");
 
   }while(retry == 1);
 //  }while(retry == 0); // こっちが正しい
