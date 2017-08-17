@@ -21,6 +21,23 @@
 
 #define NUBER_MAX 10  // 生成されるランダム数の限界(9だが+1)
 #define DIGITS 4      // 出題数列の最大
+//void retry_select(*retry){
+//  int check_flag = 0;
+//  char retry_str[2];
+//  int  retry_num;
+  
+  
+//  do {
+//    if (check_flag == 1) {
+//      puts("***正確に入力してください!!!***");
+//    }
+  
+//    fgets(retry_str,sizeof(retry_str),stdin);
+
+//    if()
+//  } while (condition);
+
+//}
 
 void print_result(int *hit,int *blow){
   if(*hit == 4){
@@ -100,6 +117,9 @@ int input_check(int *input_num,char *input_str){
 
   // 文字数が多い場合
   if(strlen(input_str) > 5){  //
+    if(input_str[5] == '\n'){
+      puts("Enterキーを入力を復帰させてください!!!!");
+    }
     while ( getchar()  !=  '\n');             // 入力バッファから,\nまで読み飛ばし
     return 2;
   }
@@ -223,17 +243,24 @@ int main(){
     puts("================結果===================");
     printf("回答回数:%d回,経過時間:%ld秒***\n",count_turn,(end-start));
     printf("再度挑戦しますか\nリトライ...(1),ギブアップ...(0):");
+    
+    // 入力バッファの初期化
+//    while(getchar() != '\n');
+
+//    retry_select(&retry);
     scanf("%d",&retry);
+   
+    // 入力バッファの初期化
+    if(retry == 1){
+        while(getchar() != '\n');
+    }
+ 
   }while(retry == 1);
 //  }while(retry == 0); // こっちが正しい
   puts("======================================");
   puts("--------------ゲーム終了--------------");
   puts("---------------またね!!!--------------");
   puts("======================================");
-
-//  end =time(NULL);
-
-//  printf("***回答回数:%d回,経過時間:%ld秒***\n",count_turn,(end-start));
 
   return 0;
 }
