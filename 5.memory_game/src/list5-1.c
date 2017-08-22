@@ -67,7 +67,7 @@ void player_input(int input_value[]){
 
   } while (input_frag != OK);
   
-  for(i = 0;i < INPUT_MAX;i++){
+  for(i = 0;i < NUMBER_MAX;i++){
     input_value[i] = input_str[i] -'0';
   }
 
@@ -132,7 +132,7 @@ int main(){
     player_input(input_value);
     
     puts("入力テスト");
-    for(i = 0;i < INPUT_MAX;i++){
+    for(i = 0;i < NUMBER_MAX;i++){
       printf("%d",input_value[i]);
     }
     puts("");
