@@ -7,18 +7,69 @@
 #include<time.h>
 #include<string.h>
 #include<stdlib.h>
+#include<ctype.h>
 
 #define NUMBER_MAX  4
 #define INPUT_MAX   254
 
+enum input_stauts {
+  SMALL_VALUE = 0,
+  OVER_VALUE,
+  EXCE_VALUE,
+  OK,
+};
+
+int input_check(char input_str[]){
+  int i;
+
+ if (INPUT_MAX -1 == strlen(input_str)){
+    puts("オーバフローの危険検出\n強制終了");
+    exit(1);
+  }
+
+  for (i = 0;i < NUMBER_MAX;i++) {
+   if(0 == isdigit(input_str[i])){
+     return EXCE_VALUE;
+   }
+  }
+ 
+  if(4 >= strlen(input_str)){
+    return SMALL_VALUE;
+  }
+
+  if(6 <= strlen(input_str)){
+    return OVER_VALUE;
+  }
+
+  return OK;
+}
+
 void player_input(int input_value[]){
+  int i;
   char input_str[INPUT_MAX];
+  int input_frag;
 
-  memset(input_str,'\0',strlen(input_str));
-  memset(input_value,0,NUMBER_MAX);
+  do {
+    memset(input_str,'\0',strlen(input_str));
+    memset(input_value,0,NUMBER_MAX);
+ 
+    fgets(input_str,sizeof(input_str),stdin);
   
-  fgets(input_str,sizeof(input_str),stdin);
+    input_frag = input_check(input_str);
+  
+    switch (input_frag) {
+      case SMALL_VALUE: printf("判別:小さすぎ\n入力は:");            break;
+      case OVER_VALUE:  printf("判別:大きすぎです\n入力は:");        break;
+      case EXCE_VALUE:  printf("判別:文字が入力されまいた\n入力は:");break;
+      case OK:          puts("判別:OK");                  break;
+      default:          puts("異常な値です");             break;
+    }
 
+  } while (input_frag != OK);
+  
+  for(i = 0;i < INPUT_MAX;i++){
+    input_value[i] = input_str[i] -'0';
+  }
 
   return;
 }
@@ -79,6 +130,12 @@ int main(){
     printf("\r入力は:");
 
     player_input(input_value);
+    
+    puts("入力テスト");
+    for(i = 0;i < INPUT_MAX;i++){
+      printf("%d",input_value[i]);
+    }
+    puts("");
 
     count_stage++;
   } while (count_stage !=  10);
